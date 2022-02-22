@@ -26,7 +26,7 @@ const ForgetPassword = () => {
               <div class="modal-content">
                 <div class="modal-header">
                   <h5 class="modal-title" id="exampleModalLabel">
-                    Forget Password
+                    Forget
                   </h5>
                   <button
                     type="button"
