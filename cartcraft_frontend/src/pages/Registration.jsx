@@ -4,6 +4,7 @@ import { register } from "../Actions/userAction";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const Registration = () => {
   const navigate = useNavigate();
@@ -30,19 +31,34 @@ const Registration = () => {
               email: "",
               password: "",
               confirmPassword: "",
+              acceptTerms: false,
             }}
             validationSchema={Yup.object().shape({
-              firstName: Yup.string().required("First Name is required"),
+              firstName: Yup.string()
+                .min(2, "To Short Name")
+                .required("First Name is required")
+                .matches(
+                  /^[aA-zZ\s]+$/,
+                  "First Name  can contain only Charatcters"
+                ),
               lastName: Yup.string().required("Last Name is required"),
               email: Yup.string()
                 .email("Email is invalid")
                 .required("Email is required"),
               password: Yup.string()
-                .min(6, "Password must be at least 6 characters")
-                .required("Password is required"),
+                .min(8, "Password must be at least 8 characters")
+                .required("Password is required")
+                .matches(
+                  /^.*(?=.{8,})((?=.*[!@#$%^&*()\-_=+{};:,<.>]){1})(?=.*\d)((?=.*[a-z]){1})((?=.*[A-Z]){1}).*$/,
+                  "Password must contain at least 8 characters, one uppercase, one number and one special case character"
+                ),
               confirmPassword: Yup.string()
                 .oneOf([Yup.ref("password"), null], "Passwords must match")
                 .required("Confirm Password is required"),
+              acceptTerms: Yup.bool().oneOf(
+                [true],
+                " You Must Accept Our Terms & Conditions "
+              ),
             })}
             onSubmit={(fields) => {
               dispatch(
@@ -168,19 +184,90 @@ const Registration = () => {
                   </div>
 
                   <div className="form-check mt-3">
-                    <input
-                      className="form-check-input"
+                    <Field
                       type="checkbox"
-                      id="autoSizingCheck"
+                      name="acceptTerms"
+                      id="acceptTerms"
+                      className={
+                        "form-check-input " +
+                        (errors.acceptTerms && touched.acceptTerms
+                          ? " is-invalid"
+                          : "")
+                      }
                     />
+
+                    {/* Open Modal For terms And Condition */}
                     <label
                       className="form-check-label"
                       htmlFor="autoSizingCheck"
                     >
-                      I accept the{" "}
-                      <span style={{ color: "blue" }}>Terms of use</span> &{" "}
-                      <span style={{ color: "blue" }}>Privacy Policy</span>
+                      I accept the
+                      <a data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        <span style={{ color: "blue", cursor: "pointer" }}>
+                          Terms of use & Privacy Policy
+                        </span>
+                      </a>
+                      <div
+                        class="modal fade"
+                        id="exampleModal"
+                        tabindex="-1"
+                        aria-labelledby="exampleModalLabel"
+                        aria-hidden="true"
+                      >
+                        <div class="modal-dialog modal-dialog-scrollable">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title" id="exampleModalLabel">
+                                Terms of use & Privacy Policy
+                              </h5>
+                            </div>
+                            <div class="modal-body">
+                              Lorem ipsum dolor sit amet consectetur adipisicing
+                              elit. Consequuntur illo cum, ducimus, quis
+                              voluptatum amet eveniet quisquam quod omnis harum
+                              necessitatibus voluptas facere. Laborum officia et
+                              assumenda voluptate corporis vitae. Lorem ipsum
+                              dolor sit amet consectetur adipisicing elit. Animi
+                              consequatur asperiores ab! Excepturi, repudiandae!
+                              Velit dolorem quae recusandae unde reiciendis! In
+                              commodi vero dolorem repudiandae laboriosam,
+                              praesentium nemo eveniet quae at eligendi culpa
+                              ratione et corrupti rem. Iure, et vitae. Lorem
+                              ipsum dolor sit, amet consectetur adipisicing
+                              elit. Cum molestiae quas suscipit qui sequi nulla
+                              aut labore! Facere voluptates laborum iste in
+                              sapiente pariatur nihil! Nostrum corporis adipisci
+                              dolore distinctio nesciunt at deserunt cupiditate
+                              consequatur impedit, dignissimos ea debitis harum
+                              magnam inventore excepturi libero rerum
+                              temporibus. Earum, eum, aliquid rem optio
+                              repellendus nostrum facilis ipsa est quia, labore
+                              provident facere qui modi odit! Consequatur
+                              dolorum, vitae mollitia nihil quasi nostrum
+                              maiores sit voluptatem. Quos, voluptates error.
+                              Aspernatur, obcaecati ea ipsam, nesciunt commodi
+                              libero tempore velit recusandae dolorem minus
+                              ducimus, id iure maxime dolores perspiciatis
+                              aliquam autem inventore magni blanditiis laborum.
+                            </div>
+                            <div class="modal-footer">
+                              <button
+                                type="button"
+                                class="btn btn-primary"
+                                data-bs-dismiss="modal"
+                              >
+                                Accept
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </label>
+                    <ErrorMessage
+                      name="acceptTerms"
+                      component="div"
+                      className="invalid-feedback"
+                    />
                   </div>
 
                   <button type="submit" className="btn btn-primary mt-4">
@@ -188,8 +275,10 @@ const Registration = () => {
                   </button>
                   <div className="mt-4 text-center">
                     <p>
-                      Have an account with us ?{" "}
-                      <span style={{ color: "blue" }}>Login here</span>
+                      Have an account with us ?
+                      <Link to="/login" style={{ textDecoration: "none" }}>
+                        Login Here
+                      </Link>
                     </p>
                   </div>
                 </div>
